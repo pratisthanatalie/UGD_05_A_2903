@@ -1,11 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthFormWrapper from '../../../components/AuthFormWrapper';
 import SocialAuth from '../../../components/SocialAuth';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
+
+const generateCaptcha = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let captcha = '';
+  for (let i = 0; i < 6; i++) {
+    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return captcha;
+};
 
 interface LoginFormData {
   email: string;
@@ -20,16 +30,25 @@ interface ErrorObject {
   captcha?: string;
 }
 
-const DEFAULT_CAPTCHA = 'AbCdEf';
-
 const LoginPage = () => {
   const router = useRouter();
+
+  const [captcha, setCaptcha] = useState('');
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
-    captchaInput: ''
+    captchaInput: '',
+    rememberMe: false
   });
+
   const [errors, setErrors] = useState<ErrorObject>({});
+  const [loginAttempts, setLoginAttempts] = useState(3);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Generate captcha hanya saat pertama load
+  useEffect(() => {
+    setCaptcha(generateCaptcha());
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,26 +56,66 @@ const LoginPage = () => {
     setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
+  const handleRefreshCaptcha = () => {
+    setCaptcha(generateCaptcha());
+    setFormData(prev => ({ ...prev, captchaInput: '' }));
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newErrors: ErrorObject = {};
+    const email = "2903";
+    const password = "241712903";
 
-    if (!formData.email.trim()) newErrors.email = 'Email tidak boleh kosong';
-    if (!formData.password.trim()) newErrors.password = 'Password tidak boleh kosong';
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email tidak boleh kosong';
+    } else if (formData.email !== `${email}@gmail.com`) {
+      newErrors.email = 'Email harus sesuai dengan format npm kalian (cth. 2903@gmail.com)';
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password tidak boleh kosong';
+    } else if (formData.password !== password) {
+      newErrors.password = 'Password harus sesuai dengan format npm kalian (cth. 241712903)';
+    }
+
     if (!formData.captchaInput.trim()) {
       newErrors.captcha = 'Captcha belum diisi';
-    } else if (formData.captchaInput !== DEFAULT_CAPTCHA) {
-      newErrors.captcha = 'Captcha salah';
+    } 
+    // Perbaikan di sini → bandingkan tanpa spasi & tidak case sensitive
+    else if (formData.captchaInput.trim().toLowerCase() !== captcha.toLowerCase()) {
+      newErrors.captcha = 'Captcha tidak valid';
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast.error('Login Gagal!', { theme: 'dark', position: 'top-right' });
+
+      // // Captcha hanya direset kalau captcha yang salah
+      // if (newErrors.captcha) {
+      //   setCaptcha(generateCaptcha());
+      //   setFormData(prev => ({ ...prev, captchaInput: '' }));
+      // }
+
+      if (loginAttempts > 0) {
+        const newAttempts = loginAttempts - 1;
+        setLoginAttempts(newAttempts);
+
+        toast.error(
+          newAttempts === 0
+            ? 'Kesempatan login habis!'
+            : `Login gagal! Sisa kesempatan: ${newAttempts}`,
+          { theme: 'dark', position: 'top-right' }
+        );
+      }
       return;
     }
 
-    toast.success('Login Berhasil!', { theme: 'dark', position: 'top-right' });
+    toast.success('Login Berhasil!', {
+      theme: 'dark',
+      position: 'top-right'
+    });
+
     router.push('/home');
   };
 
@@ -64,85 +123,136 @@ const LoginPage = () => {
     <AuthFormWrapper title="Login">
       <form onSubmit={handleSubmit} className="space-y-5 w-full">
 
+        <p className="text-center text-sm text-gray-600 font-bold">
+          Sisa Kesempatan: {loginAttempts}
+        </p>
+
+        {/* EMAIL */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+          <label className="text-sm font-medium text-gray-700">Email</label>
           <input
-            id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-0 focus:border-black transition duration-200`}
             placeholder="Masukan email"
           />
-          {errors.email && <p className="text-red-600 text-sm italic mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-600 text-sm italic">{errors.email}</p>}
         </div>
 
+        {/* PASSWORD */}
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-            placeholder="Masukan password"
-          />
-          {errors.password && <p className="text-red-600 text-sm italic mt-1">{errors.password}</p>}
+          <label className="text-sm font-medium text-gray-700">Password</label>
+
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full px-4 py-2.5 rounded-lg border ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-0 focus:border-black transition duration-200`}
+              placeholder="Masukkan password"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2.5 text-gray-600 text-2xl"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {errors.password && <p className="text-red-600 text-sm italic">{errors.password}</p>}
         </div>
 
-        <div className="flex items-center justify-between mt-2">
+        {/* REMEMBER */}
+        <div className="flex items-center justify-between">
           <label className="flex items-center text-sm text-gray-700">
             <input
               type="checkbox"
-              name="rememberMe"
               checked={formData.rememberMe || false}
               onChange={(e) =>
                 setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))
               }
-              className="mr-2 h-4 w-4 rounded border-gray-300"
+              className="mr-2"
             />
             Ingat Saya
           </label>
 
-          <Link href="/auth/forgot-password" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/auth/forgot-password" className="text-blue-600 text-sm font-semibold">
             Forgot Password?
           </Link>
         </div>
 
+        {/* CAPTCHA */}
         <div className="space-y-2">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-gray-700">Captcha:</span>
-            <span className="font-mono text-lg font-bold text-gray-800 bg-gray-100 px-3 py-1.5 rounded">
-              {DEFAULT_CAPTCHA}
+            <span className="font-mono font-bold text-lg bg-gray-100 px-3 py-1.5 rounded">
+              {captcha}
             </span>
+
+            <button
+              type="button"
+              onClick={handleRefreshCaptcha}
+              className="text-blue-600 text-xl"
+            >
+              <FaSyncAlt />
+            </button>
           </div>
 
           <input
-            type="text"
             name="captchaInput"
             value={formData.captchaInput}
             onChange={handleChange}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.captcha ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.captcha ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-0 focus:border-black transition duration-200`}
             placeholder="Masukan captcha"
           />
-          {errors.captcha && <p className="text-red-600 text-sm italic mt-1">{errors.captcha}</p>}
+          {errors.captcha && <p className="text-red-600 text-sm italic">{errors.captcha}</p>}
         </div>
 
+        {/* BUTTON */}
         <button
           type="submit"
-          className="w-full py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
+          disabled={loginAttempts === 0}
+          className={`w-full py-2.5 rounded-lg text-white font-semibold
+          ${loginAttempts === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
         >
           Sign In
         </button>
 
+        <button
+          type="button"
+          onClick={() => {
+            setLoginAttempts(3);
+            toast.success('Kesempatan login berhasil direset!', {
+              theme: 'dark',
+              position: 'top-right'
+            });
+          }}
+          disabled={loginAttempts !== 0}
+          className={`w-full py-2.5 rounded-lg font-semibold
+          ${loginAttempts === 0 ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-400 text-white cursor-not-allowed'}`}
+        >
+          Reset Kesempatan
+        </button>
+
         <SocialAuth />
-        <p className="mt-6 text-center text-sm text-gray-600">
-            Tidak punya akun?{" "}
-            <Link href="/auth/register" className="text-blue-600 hover:text-blue-800 font-semibold">
-                Daftar
-            </Link>
+
+        <p className="text-center text-sm text-gray-600">
+          Tidak punya akun?{' '}
+          <Link href="/auth/register" className="text-blue-600 font-semibold">
+            Daftar
+          </Link>
         </p>
+
       </form>
     </AuthFormWrapper>
   );
