@@ -6,20 +6,20 @@ export default function NotAuthorized() {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br">
       
-      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl w-full text-center">
+      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl w-[350px] text-center">
 
         {/* IMAGE */}
         <img
-          src="/not-authorize.jpg" 
+          src="/not-authorized.jpg" // ⬅️ simpan gambar di public/
           alt="Not Authorized"
-          className="w-full h-48 object-contain bg-gray-100 rounded-lg mb-5"
+          className="w-full h-48 object-contain bg-gray-100"
         />
 
         {/* TITLE */}
         <h2 className="text-lg font-bold text-gray-800 flex items-center justify-center gap-2 mb-1">
-          <span className="text-red-500 text-xl">❌</span>
+          <span className="text-red-500 text-xl">✖</span>
           Anda belum login
         </h2>
 
