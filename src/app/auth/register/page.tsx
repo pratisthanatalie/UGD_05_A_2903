@@ -139,7 +139,7 @@ const RegisterPage = () => {
             type="tel"
             {...register('nomorTelp', {
               required: 'Nomor telepon wajib diisi',
-              minLength: { value: 10, message: 'Nomor telepon minimal 10 angka' }
+              minLength: { value: 10, message: 'Nomor telepon minimal 10 karakter' }
             })}
             onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
             className={`w-full px-4 py-2.5 rounded-lg border ${
