@@ -91,12 +91,6 @@ const LoginPage = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
 
-      // // Captcha hanya direset kalau captcha yang salah
-      // if (newErrors.captcha) {
-      //   setCaptcha(generateCaptcha());
-      //   setFormData(prev => ({ ...prev, captchaInput: '' }));
-      // }
-
       if (loginAttempts > 0) {
         const newAttempts = loginAttempts - 1;
         setLoginAttempts(newAttempts);
@@ -115,7 +109,8 @@ const LoginPage = () => {
       theme: 'dark',
       position: 'top-right'
     });
-
+    
+    localStorage.setItem('isLoggedIn', 'true');
     router.push('/home');
   };
 

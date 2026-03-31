@@ -1,4 +1,4 @@
-'use client'; 
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,56 +35,46 @@ const RegisterPage = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-    setError,
-    clearErrors
-  } = useForm<RegisterFormData>();
+    formState: { errors, isValid },
+    clearErrors,
+  } = useForm<RegisterFormData>({
+    mode: 'onChange',
+  });
 
   const [captcha, setCaptcha] = useState('');
-  const [captchaInput, setCaptchaInput] = useState('');
-
-  const [strength, setStrength] = useState(0);
-  const [confirmStrength, setConfirmStrength] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const password = watch('password', '');
-  const confirmPassword = watch('confirmPassword', '');
 
   useEffect(() => {
     setCaptcha(generateCaptcha());
   }, []);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [strength, setStrength] = useState(0);
+  const [confirmStrength, setConfirmStrength] = useState(0);
+
+  const password = watch('password') || '';
+  const confirmPassword = watch('confirmPassword') || '';
+
   // PASSWORD STRENGTH
   useEffect(() => {
-    if (!password) {
-      setStrength(0);
-      return;
-    }
-    const value = Math.min(
+    const strength =
       (password.length > 7 ? 25 : 0) +
       (/[A-Z]/.test(password) ? 25 : 0) +
       (/[0-9]/.test(password) ? 25 : 0) +
-      (/[^A-Za-z0-9]/.test(password) ? 25 : 0),
-      100
-    );
-    setStrength(value);
+      (/[^A-Za-z0-9]/.test(password) ? 25 : 0);
+
+    setStrength(strength);
   }, [password]);
 
   // CONFIRM PASSWORD STRENGTH
   useEffect(() => {
-    if (!confirmPassword) {
-      setConfirmStrength(0);
-      return;
-    }
-    const value = Math.min(
+    const strength =
       (confirmPassword.length > 7 ? 25 : 0) +
       (/[A-Z]/.test(confirmPassword) ? 25 : 0) +
       (/[0-9]/.test(confirmPassword) ? 25 : 0) +
-      (/[^A-Za-z0-9]/.test(confirmPassword) ? 25 : 0),
-      100
-    );
-    setConfirmStrength(value);
+      (/[^A-Za-z0-9]/.test(confirmPassword) ? 25 : 0);
+
+    setConfirmStrength(strength);
   }, [confirmPassword]);
 
   const getStrengthColor = (val: number) => {
@@ -94,69 +84,8 @@ const RegisterPage = () => {
     return 'bg-green-500';
   };
 
-  const onSubmit = (data: RegisterFormData) => {
-    clearErrors();
-    let valid = true;
-
-    if (!data.username) {
-      setError('username', { message: 'Username wajib diisi' });
-      valid = false;
-    } else if (data.username.length < 3) {
-      setError('username', { message: 'Username minimal 3 karakter' });
-      valid = false;
-    } else if (data.username.length > 8) {
-      setError('username', { message: 'Username maksimal 8 karakter' });
-      valid = false;
-    }
-
-    if (!data.email) {
-      setError('email', { message: 'Email wajib diisi' });
-      valid = false;
-    } else if (
-      !data.email.includes('@') ||
-      !(data.email.endsWith('.com') ||
-        data.email.endsWith('.net') ||
-        data.email.endsWith('.co'))
-    ) {
-      setError('email', { message: 'Email harus format @ dan .com/.net/.co' });
-      valid = false;
-    }
-
-    if (!data.nomorTelp) {
-      setError('nomorTelp', { message: 'Nomor telepon wajib diisi' });
-      valid = false;
-    } else if (!/^[0-9]+$/.test(data.nomorTelp)) {
-      setError('nomorTelp', { message: 'Nomor telepon hanya boleh angka' });
-      valid = false;
-    } else if (data.nomorTelp.length < 10) {
-      setError('nomorTelp', { message: 'Nomor telepon minimal 10 angka' });
-      valid = false;
-    }
-
-    if (!data.password) {
-      setError('password', { message: 'Password wajib diisi' });
-      valid = false;
-    } else if (data.password.length < 8) {
-      setError('password', { message: 'Password minimal 8 karakter' });
-      valid = false;
-    }
-
-    if (!data.confirmPassword) {
-      setError('confirmPassword', { message: 'Konfirmasi password wajib diisi' });
-      valid = false;
-    } else if (data.password !== data.confirmPassword) {
-      setError('confirmPassword', { message: 'Konfirmasi password tidak cocok' });
-      valid = false;
-    }
-
-    if (!captchaInput || captchaInput !== captcha) {
-      setError('captcha', { message: 'Harus sesuai dengan captcha yang ditampilkan' });
-      valid = false;
-    }
-
-    if (!valid) return;
-
-    toast.success('Register Berhasil!', { theme: 'dark', position: 'top-right' });
+  const onSubmit = () => {
+    toast.success('Register Berhasil!', { theme: 'dark' });
     router.push('/auth/login');
   };
 
@@ -170,8 +99,14 @@ const RegisterPage = () => {
             Username <span className="text-gray-500 font-normal">(max 8 karakter)</span>
           </label>
           <input
-            {...register('username')}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.username ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            {...register('username', {
+              required: 'Username wajib diisi',
+              minLength: { value: 3, message: 'Username minimal 3 karakter' },
+              maxLength: { value: 8, message: 'Username maksimal 8 karakter' }
+            })}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.username ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Masukkan username"
           />
           {errors.username && <p className="text-red-500 text-sm italic">{errors.username.message}</p>}
@@ -182,8 +117,16 @@ const RegisterPage = () => {
           <label className="text-sm font-medium text-gray-700">Email</label>
           <input
             type="email"
-            {...register('email')}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            {...register('email', {
+              required: 'Email wajib diisi',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.(com|net|co)$/,
+                message: 'Format email tidak valid'
+              }
+            })}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Masukkan email"
           />
           {errors.email && <p className="text-red-500 text-sm italic">{errors.email.message}</p>}
@@ -194,11 +137,14 @@ const RegisterPage = () => {
           <label className="text-sm font-medium text-gray-700">Nomor Telepon</label>
           <input
             type="tel"
-            {...register('nomorTelp')}
-            onInput={(e) => {
-              e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '');
-            }}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.nomorTelp ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            {...register('nomorTelp', {
+              required: 'Nomor telepon wajib diisi',
+              minLength: { value: 10, message: 'Nomor telepon minimal 10 angka' }
+            })}
+            onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.nomorTelp ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Masukkan nomor telepon"
           />
           {errors.nomorTelp && <p className="text-red-500 text-sm italic">{errors.nomorTelp.message}</p>}
@@ -210,8 +156,13 @@ const RegisterPage = () => {
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
-              {...register('password')}
-              className={`w-full px-4 py-2.5 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              {...register('password', {
+                required: 'Password wajib diisi',
+                minLength: { value: 8, message: 'Password minimal 8 karakter' }
+              })}
+              className={`w-full px-4 py-2.5 rounded-lg border ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="Masukkan password"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-2.5 text-gray-600">
@@ -237,8 +188,14 @@ const RegisterPage = () => {
           <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}
-              {...register('confirmPassword')}
-              className={`w-full px-4 py-2.5 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              {...register('confirmPassword', {
+                required: 'Konfirmasi password wajib diisi',
+                validate: (value) =>
+                  value === password || 'Konfirmasi password tidak cocok'
+              })}
+              className={`w-full px-4 py-2.5 rounded-lg border ${
+                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="Masukkan ulang password"
             />
             <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-2.5 text-gray-600">
@@ -262,12 +219,13 @@ const RegisterPage = () => {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-gray-700">Captcha:</span>
-            <span className="font-mono font-bold bg-gray-100 px-3 py-1 rounded">{captcha}</span>
+            <span className="font-mono font-bold bg-gray-100 px-3 py-1 rounded">
+              {captcha}
+            </span>
             <button
               type="button"
               onClick={() => {
                 setCaptcha(generateCaptcha());
-                setCaptchaInput('');
                 clearErrors('captcha');
               }}
               className="text-blue-600 text-lg"
@@ -278,16 +236,28 @@ const RegisterPage = () => {
 
           <input
             type="text"
-            {...register('captcha')}
-            value={captchaInput}
-            onChange={(e) => setCaptchaInput(e.target.value)}
-            className={`w-full px-4 py-2.5 rounded-lg border ${errors.captcha ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            {...register('captcha', {
+              validate: (value) =>
+                value?.trim().toLowerCase() === captcha.toLowerCase() ||
+                'Harus sesuai dengan captcha yang ditampilkan'
+            })}
+            className={`w-full px-4 py-2.5 rounded-lg border ${
+              errors.captcha ? 'border-black-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Masukkan captcha"
           />
-          {errors.captcha && <p className="text-red-500 text-sm italic">{errors.captcha.message}</p>}
+
+          {errors.captcha && (
+            <p className="text-red-500 text-sm italic">
+              {errors.captcha.message}
+            </p>
+          )}
         </div>
 
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded font-bold">
+        <button
+          type="submit"
+          className={`w-full py-2 rounded font-bold text-white bg-blue-600 hover:bg-blue-700`}
+        >
           Register
         </button>
 
