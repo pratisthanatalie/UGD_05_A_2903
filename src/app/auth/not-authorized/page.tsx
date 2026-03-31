@@ -8,7 +8,7 @@ export default function NotAuthorized() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       
-      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl w-[350px] text-center">
+      <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl w-full text-center">
 
         {/* IMAGE */}
         <img
