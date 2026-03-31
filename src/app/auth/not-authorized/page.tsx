@@ -12,7 +12,7 @@ export default function NotAuthorized() {
 
         {/* IMAGE */}
         <img
-          src="public/not-authorize.jpg" 
+          src="/not-authorize.jpg" 
           alt="Not Authorized"
           className="w-full h-40 object-cover rounded-lg mb-4"
         />
