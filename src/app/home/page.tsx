@@ -6,7 +6,8 @@ import Game1 from "../../components/Game1";
 
 export default function Home() {
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -14,11 +15,17 @@ export default function Home() {
     if (!isLoggedIn) {
       router.replace('/auth/not-authorized');
     } else {
-      setChecking(false);
+      setIsAllowed(true);
     }
+
+    setChecked(true);
   }, []);
 
-  if (checking) return null; 
+  // ⛔ jangan render apa-apa sebelum cek selesai
+  if (!checked) return null;
+
+  // ⛔ kalau tidak login, jangan render halaman
+  if (!isAllowed) return null;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
