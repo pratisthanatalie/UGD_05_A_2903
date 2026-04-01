@@ -18,13 +18,13 @@ export default function NotAuthorized() {
 </div>
 
   {/* TITLE */}
-  <h2 className="text-lg font-bold text-gray-800 flex items-center justify-center gap-2 mb-1 mt-3">
+  <h2 className="text-lg font-semibold text-gray-800 flex">
     <span className="text-red-500 text-xl">✖</span>
     Anda belum login
   </h2>
 
   {/* SUBTEXT */}
-  <p className="text-sm text-gray-500 mb-4">
+  <p className="text-sm text-gray-600 mt-1">
     Silakan login terlebih dahulu
   </p>
 
@@ -32,7 +32,7 @@ export default function NotAuthorized() {
   <button
     onClick={() => router.push('/auth/login')}
     type="button"
-    className="bg-blue-600 text-white px-5 py-2 rounded-lg flex items-center justify-center gap-2 mx-auto hover:bg-blue-700 transition"
+    className="bg-blue-500 text-white px-5 py-2 rounded-lg flex items-center justify-center gap-2 mx-auto hover:bg-blue-700 transition"
   >
     ← Kembali
   </button>
