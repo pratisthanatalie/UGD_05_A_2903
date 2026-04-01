@@ -12,7 +12,7 @@ export default function NotAuthorized() {
 
         {/* IMAGE */}
         <img
-          src="/not-authorized.jpg" // ⬅️ simpan gambar di public/
+          src="/not-authorize.jpg" // ⬅️ simpan gambar di public/
           alt="Not Authorized"
           className="w-full h-48 object-contain bg-gray-100"
         />
@@ -30,7 +30,7 @@ export default function NotAuthorized() {
 
         {/* BUTTON */}
         <button
-          onClick={() => router.push('/auth/login')}
+          onClick={() => router.push('/auth/login?unauthorized=true')}
           className="bg-blue-600 text-white px-5 py-2 rounded-lg flex items-center justify-center gap-2 mx-auto hover:bg-blue-700 transition"
         >
           ← Kembali

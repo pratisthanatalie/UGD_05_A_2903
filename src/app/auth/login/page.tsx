@@ -7,6 +7,7 @@ import SocialAuth from '../../../components/SocialAuth';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
 
 const generateCaptcha = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -44,7 +45,17 @@ const LoginPage = () => {
   const [errors, setErrors] = useState<ErrorObject>({});
   const [loginAttempts, setLoginAttempts] = useState(3);
   const [showPassword, setShowPassword] = useState(false);
+  const searchParams = useSearchParams();
 
+  useEffect(() => {
+    if (searchParams.get('unauthorized')) {
+      toast.error('Silakan login terlebih dahulu!', {
+        theme: 'dark',
+        position: 'top-right'
+      });
+    }
+  }, []);
+  
   // Generate captcha hanya saat pertama load
   useEffect(() => {
     setCaptcha(generateCaptcha());
