@@ -11,9 +11,9 @@ export default function NotAuthorized() {
 
         {/* IMAGE */}
         <img
-          src="/gambarugd5.jpg" // ⬅️ simpan gambar di public/
+          src="/gambarugd5.jpg"
           alt="not authorized"
-          className="w-full h-full object-cover"
+          className="w-full h-40 object-cover rounded-lg"
         />
       </div>
 
