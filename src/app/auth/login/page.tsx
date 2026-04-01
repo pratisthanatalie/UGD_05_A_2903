@@ -85,7 +85,7 @@ const LoginPage = () => {
     if (!formData.captchaInput.trim()) {
       newErrors.captcha = 'Captcha belum diisi';
     } 
-    // Perbaikan di sini → bandingkan tanpa spasi & tidak case sensitive
+    
     else if (formData.captchaInput.trim().toLowerCase() !== captcha.toLowerCase()) {
       newErrors.captcha = 'Captcha tidak valid';
     }
@@ -112,7 +112,7 @@ const LoginPage = () => {
       position: 'top-right'
     });
     
-    sessionStorage.setItem('isLoggedIn', 'true'); // ✅ yang baru
+    sessionStorage.setItem('isLoggedIn', 'true'); 
     router.push('/home');
   };
 

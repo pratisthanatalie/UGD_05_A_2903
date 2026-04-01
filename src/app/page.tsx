@@ -7,7 +7,7 @@ export default function RootPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/auth/login'); // ✅ selalu ke login
+    router.replace('/auth/login'); 
   }, [router]);
 
   return null;

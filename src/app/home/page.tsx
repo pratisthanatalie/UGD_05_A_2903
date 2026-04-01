@@ -12,9 +12,9 @@ export default function Home() {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 
     if (!isLoggedIn) {
-      router.replace('/auth/not-authorized'); // ❌ belum login → tolak
+      router.replace('/auth/not-authorized'); 
     } else {
-      setIsAllowed(true); // ✅ sudah login → boleh masuk
+      setIsAllowed(true); // 
     }
   }, [router]);
 
