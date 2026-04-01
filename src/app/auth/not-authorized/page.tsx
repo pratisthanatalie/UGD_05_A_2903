@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function NotAuthorized() {
   const router = useRouter();
@@ -11,9 +12,11 @@ export default function NotAuthorized() {
 
         {/* IMAGE */}
         <img
-          src="/gambarugd5.jpg"
-          alt="not authorized"
-          className="w-full h-40 object-cover rounded-lg"
+         src="/gambarugd5.jpg"
+         alt="not authorized"
+         width={300}
+         height={200}
+         className="rounded-lg object-cover"
         />
       </div>
 
