@@ -1,30 +1,14 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Game1 from '../components/Game1';
 
-export default function Home() {
+export default function RootPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-
-    if (!isLoggedIn) {
-      router.push('/auth/not-authorized');
-    } else {
-      setIsAuthenticated(true);
-    }
+    router.push('/auth/login'); // ✅ selalu ke login
   }, [router]);
 
-  if (!isAuthenticated) {
-    return null; 
-  }
-
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Game1 />
-    </div>
-  );
+  return null;
 }

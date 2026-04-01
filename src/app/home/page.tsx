@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Game1 from "../../components/Game1";
 
@@ -9,17 +9,17 @@ export default function Home() {
   const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 
-    if (isLoggedIn !== 'true') {
-      setIsAllowed(true);
+    if (!isLoggedIn) {
+      router.replace('/auth/not-authorized'); // ❌ belum login → tolak
     } else {
-      router.replace('/auth/not-authorized');
+      setIsAllowed(true); // ✅ sudah login → boleh masuk
     }
   }, [router]);
 
   if (!isAllowed) {
-    return null; // bisa diganti loading
+    return null;
   }
 
   return (
