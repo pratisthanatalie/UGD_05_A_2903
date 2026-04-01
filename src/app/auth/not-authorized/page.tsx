@@ -11,12 +11,10 @@ export default function NotAuthorized() {
       <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl shadow-2xl w-[350px] text-center">
 
   {/* IMAGE */}
-  <Image
-  src="/images/gambarugd5.jpg"
-  alt="not authorized"
-  width={300}
-  height={200}
-  className="rounded-lg object-cover mx-auto"
+  <img
+  src="/gambarugd5.jpg"
+  alt="test"
+  className="w-[300px] h-[200px] object-cover mx-auto"
 />
 
   {/* TITLE */}
