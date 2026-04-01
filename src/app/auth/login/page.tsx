@@ -7,16 +7,8 @@ import SocialAuth from '../../../components/SocialAuth';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
-import { useSearchParams } from 'next/navigation';
 
-const generateCaptcha = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let captcha = '';
-  for (let i = 0; i < 6; i++) {
-    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return captcha;
-};
+
 
 interface LoginFormData {
   email: string;
@@ -30,6 +22,15 @@ interface ErrorObject {
   password?: string;
   captcha?: string;
 }
+
+const generateCaptcha = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let captcha = '';
+  for (let i = 0; i < 6; i++) {
+    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return captcha;
+};
 
 const LoginPage = () => {
   const router = useRouter();
@@ -45,17 +46,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState<ErrorObject>({});
   const [loginAttempts, setLoginAttempts] = useState(3);
   const [showPassword, setShowPassword] = useState(false);
-  const searchParams = useSearchParams();
 
-  useEffect(() => {
-    if (searchParams.get('unauthorized')) {
-      toast.error('Silakan login terlebih dahulu!', {
-        theme: 'dark',
-        position: 'top-right'
-      });
-    }
-  }, []);
-  
   // Generate captcha hanya saat pertama load
   useEffect(() => {
     setCaptcha(generateCaptcha());

@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 export default function NotAuthorized() {
   const router = useRouter();
@@ -12,10 +11,11 @@ export default function NotAuthorized() {
 
   {/* IMAGE */}
   <img
-  src="/gambarugd5.jpg"
-  alt="test"
-  className="w-[300px] h-[200px] object-cover mx-auto"
+  src="/gambar.jpg"
+  alt="not authorized"
+  className="w-full h-full object-cover"
 />
+</div>
 
   {/* TITLE */}
   <h2 className="text-lg font-bold text-gray-800 flex items-center justify-center gap-2 mb-1 mt-3">
@@ -30,13 +30,13 @@ export default function NotAuthorized() {
 
   {/* BUTTON */}
   <button
-    onClick={() => router.push('/auth/login?unauthorized=true')}
+    onClick={() => router.push('/auth/login')}
+    type="button"
     className="bg-blue-600 text-white px-5 py-2 rounded-lg flex items-center justify-center gap-2 mx-auto hover:bg-blue-700 transition"
   >
     ← Kembali
   </button>
 
-</div>
     </div>
   );
 }
