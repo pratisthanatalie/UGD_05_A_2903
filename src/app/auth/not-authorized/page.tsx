@@ -13,7 +13,7 @@ export default function NotAuthorized() {
   <img
   src="/gambar.jpg"
   alt="not authorized"
-  className="w-full h-full object-cover"
+  className="w-full h-48 object-contain"
 />
 </div>
 
