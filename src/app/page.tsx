@@ -9,14 +9,14 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
 
     if (!isLoggedIn) {
       router.push('/auth/not-authorized');
     } else {
       setIsAuthenticated(true);
     }
-  }, []);
+  }, [router]);
 
   if (!isAuthenticated) {
     return null; 

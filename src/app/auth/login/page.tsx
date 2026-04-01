@@ -112,7 +112,7 @@ const LoginPage = () => {
       position: 'top-right'
     });
     
-    localStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('isLoggedIn', 'true'); // ✅ yang baru
     router.push('/home');
   };
 
